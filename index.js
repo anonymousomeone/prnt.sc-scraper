@@ -47,7 +47,7 @@ async function scrape(reps){
       console.log('something went wrong');
     });
     console.log((i + 1) + '/' + reps)
-    var wait = 4000 + Math.floor(Math.random() * 1000)
+    var wait = 4000 + Math.floor(Math.random() * 1000) // dont edit too much or cloudflare will block your ip (speaking from experince)
     await sleep(wait)
   }
 }
