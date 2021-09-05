@@ -2,11 +2,18 @@ const fs = require('fs');
 const got = require('got');
 const jsdom = require("jsdom");
 const download = require('image-downloader')
+const readline = require('readline');
+const { execPath } = require('process');
 const { JSDOM } = jsdom;
 
 const options = { headers: { 'User-Agent': 'Mozilla/4.0' } }
 
 let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 function rand() {
     const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -15,10 +22,14 @@ function rand() {
 }
 
 function downloadImage(url, filepath) {
+  try{
     return download.image({
        url,
        dest: filepath 
     });
+  } catch(err){
+    console.log('something went wrong (probably nothing)')
+  }
 }
 
 async function scrape(reps){
@@ -32,14 +43,17 @@ async function scrape(reps){
       var src = image.src;
       downloadImage(src, './scraped')
       console.log('scraped ' + src)
-    }).catch(err => {
-      console.log(err);
+    }).catch(() => {
+      console.log('something went wrong');
     });
+    console.log((i + 1) + '/' + reps)
     var wait = 4000 + Math.floor(Math.random() * 1000)
-    console.log(wait)
     await sleep(wait)
   }
 }
 
-var reps = 100
-scrape(reps)
+rl.question('how many reps??? ', function (answer) {
+  var reps = parseInt(answer)
+  scrape(reps)
+  rl.close()
+})
