@@ -3,7 +3,6 @@ const got = require('got');
 const jsdom = require("jsdom");
 const download = require('image-downloader')
 const readline = require('readline');
-const { execPath } = require('process');
 const { JSDOM } = jsdom;
 
 const options = { headers: { 'User-Agent': 'Mozilla/4.0' } }
