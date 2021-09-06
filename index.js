@@ -1,4 +1,3 @@
-const fs = require('fs');
 const got = require('got');
 const jsdom = require("jsdom");
 const download = require('image-downloader')
