@@ -1,7 +1,7 @@
-# prnt.sc-scraper
+# prnt.sc-scraper bot
 sometimes gives error but wtf idc
 
-put on a drive with lots of space and let it go overnight lmfao
+run it and let it go overnight lmfao
 
 
 to use:
