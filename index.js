@@ -1,11 +1,11 @@
 const got = require('got');
 const jsdom = require("jsdom");
-const download = require('image-downloader')
-const readline = require('readline');
 const URL = require('url').URL;
+const { Client, MessageEmbed, Intents } = require('discord.js');
+const { token, ownerID, prefix } = require('./config.json');
 const { JSDOM } = jsdom;
 
-const options = { headers: { 'User-Agent': 'Mozilla/4.0' } }
+const options = { headers: { 'User-Agent': 'Mozilla/5.0' } }
 
 let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -17,11 +17,6 @@ const stringIsAValidUrl = (s) => {
     return false;
   }
 };
-
-var rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
 
 function code() {
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -40,20 +35,8 @@ function rand() {
   return thing
 }
 
-function downloadImage(url, filepath) {
-  if (!stringIsAValidUrl(url)) {return console.log('bad url')}
-  try{
-    return download.image({
-       url,
-       dest: filepath 
-    });
-  } catch(err){
-    console.log('something went wrong (probably nothing)')
-  }
-}
-
-async function scrape(reps){
-  for (var i = 0; i < reps; i++) {
+async function spam(message) {
+  while (true) {
     var id = rand()
     var url = ('http://prnt.sc/' + id)
     got(url, options).then(response => {
@@ -61,18 +44,35 @@ async function scrape(reps){
       var document = dom.window.document;
       var image = document.getElementById('screenshot-image')
       var src = image.src;
-      downloadImage(src, './scraped')
-      console.log(((i + 1) + '/' + reps) + ' scraped, ' + src + ' (' + url + ')')
-    }).catch(() => {
-      console.log('something went wrong');
-    });
+      if (!stringIsAValidUrl(src)) {return;}
+      console.log(url + ' ' + src)
+      const embed = new MessageEmbed()
+      .setTitle('prnt.sc random image')
+      .setURL(url)
+      .setImage(src)
+    message.channel.send(embed)
+    })
+
     var wait = 4000 + Math.floor(Math.random() * 1000) // dont edit too much or cloudflare will block your ip (speaking from experince)
     await sleep(wait)
   }
 }
 
-rl.question('how many reps??? ', function (answer) {
-  var reps = parseInt(answer)
-  scrape(reps)
-  rl.close()
+// Create a new client instance
+const client = new Client();
+
+// When the client is ready, run this code (only once)
+client.once('ready', () => {
+	console.log('Ready!');
+});
+
+client.on('message', message => {
+  const args = message.content.slice(prefix.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
+  if (command == 'spam' && message.author.id == ownerID) {
+    spam(message)
+  }
 })
+
+// Login to Discord with your client's token
+client.login(token);
